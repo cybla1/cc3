@@ -19,6 +19,10 @@ Arobot::Arobot()
 	sc2 = CreateDefaultSubobject<Uuu>(TEXT("temp12"));
 	sc2->SetupAttachment(RootComponent);
 	sc2->SetRelativeLocation(FVector(0.0f, 100.0f, 00.0f));
+
+	arr.Add(RootComponent);
+	arr.Add(sc);
+	arr.Add(sc2);
 }
 
 // Called when the game starts or when spawned
@@ -53,10 +57,10 @@ void Arobot::Tick(float DeltaTime)
 	FVector root = RootComponent->GetComponentLocation();
 	FVector pos = sc->GetComponentLocation();
 	FVector pos2 = sc2->GetComponentLocation();
-	UE_LOG(LogTemp, Warning, TEXT("root : %f %f %f"), root[0], root[1], root[2]);
-	UE_LOG(LogTemp, Warning, TEXT("se : %f %f %f"), pos[0],pos[1],pos[2]);
+	///UE_LOG(LogTemp, Warning, TEXT("root : %f %f %f"), root[0], root[1], root[2]);
+	//UE_LOG(LogTemp, Warning, TEXT("se : %f %f %f"), pos[0],pos[1],pos[2]);
 
-	UE_LOG(LogTemp, Warning, TEXT("se2 : %f %f %f"), pos2[0],pos2[1],pos2[2]);
+	//UE_LOG(LogTemp, Warning, TEXT("se2 : %f %f %f"), pos2[0],pos2[1],pos2[2]);
 
 
 }
@@ -67,25 +71,84 @@ void Arobot::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 }
+/*
+bool Arobot::CanBeSeenFrom(const FVector& ObservationLocation, FVector& OutSeenLocation, int32& NumberOfLoSChecksPerformed, float& OutSightStrength, const AActor* IgnoredActor) const
+{
+	static const FName Name_sight = FName(TEXT("TestPawn"));
+	FHitResult HitResult;
+
+	int cnt = 0;
+	FVector SightTargetLocation = RootComponent->GetComponentLocation();
+	bool hit = GetWorld()->LineTraceSingleByChannel(HitResult, ObservationLocation, SightTargetLocation, ECC_Visibility, FCollisionQueryParams(Name_sight, false, IgnoredActor));
+	if (!hit || (HitResult.Actor.IsValid() && HitResult.Actor->IsOwnedBy(this)))
+	{
+
+		UE_LOG(LogTemp, Warning, TEXT("!!!!!!!!!!!!!!!!!!!!!! ") );
+		cnt++;
+		return true;
+	}
+
+	if (cnt > 0)
+	{
+		OutSeenLocation = SightTargetLocation;
+		OutSightStrength = 1;
+		return true;
+	}
+	//UE_LOG(LogTemp, Warning, TEXT("gogogo"));
+	for (int i = 0; i < arr.Num(); i++)
+	{
+		
+		FVector SightTargetLocation = arr[i]->GetComponentLocation();
+		bool hit = GetWorld()->LineTraceSingleByChannel(HitResult, ObservationLocation, SightTargetLocation, ECC_Visibility, FCollisionQueryParams(Name_sight, false, IgnoredActor));
+		NumberOfLoSChecksPerformed++;
+		UE_LOG(LogTemp, Warning, TEXT("!! %d"), i);
+		
+		if (!hit || (HitResult.Actor.IsValid() && HitResult.Actor->IsOwnedBy(this)))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("hit"));
+			//UE_LOG(LogTemp, Warning, TEXT("!! %s"), *HitResult.GetComponent()->GetName());
+		}
+		else {
+			UE_LOG(LogTemp, Warning, TEXT(" no hit"));
+
+	}
+
+
+	
+
+	
+
+
+	OutSightStrength = 0;
+	return false;
+}*/
 
 bool Arobot::CanBeSeenFrom(const FVector& ObservationLocation, FVector& OutSeenLocation, int32& NumberOfLoSChecksPerformed, float& OutSightStrength, const AActor* IgnoredActor) const
 {
 	static const FName Name_sight = FName(TEXT("TestPawn"));
 	FHitResult HitResult;
-	FVector SightTargetLocation = RootComponent->GetComponentLocation();
+	FVector SightTargetLocation = sc->GetComponentLocation();
 
+	//UE_LOG(LogTemp, Warning, TEXT("?? %d %d %d"), ObservationLocation[0], ObservationLocation[1], ObservationLocation[2]);
 	bool hit = GetWorld()->LineTraceSingleByChannel(HitResult, ObservationLocation, SightTargetLocation, ECC_Visibility, FCollisionQueryParams(Name_sight, false, IgnoredActor));
-
+	OutSeenLocation = SightTargetLocation;
+	return true;
+	if (hit) {
+		//UE_LOG(LogTemp, Warning, TEXT("hit"));
+	}
+	else {
+		//UE_LOG(LogTemp, Warning, TEXT(" no hit"));
+		
+	}
 
 	if (!hit || (HitResult.Actor.IsValid() && HitResult.Actor->IsOwnedBy(this)))
 	{
-		OutSeenLocation = SightTargetLocation;
-		OutSightStrength = 1;
-		return true;
+		//OutSeenLocation = SightTargetLocation;
+		//OutSightStrength = 1;
+		//return true;
 	}
 
 
 	OutSightStrength = 0;
 	return false;
 }
-

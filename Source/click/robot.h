@@ -34,5 +34,7 @@ public:
 	Uuu* sc2;
 
 
+	TArray<USceneComponent*> arr;
+
 	virtual bool CanBeSeenFrom(const FVector& ObservationLocation, FVector& OutSeenLocation, int32& NumberOfLoSChecksPerformed, float& OutSightStrength, const AActor* IgnoredActor = NULL) const;
 };
